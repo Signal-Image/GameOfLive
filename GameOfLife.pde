@@ -32,9 +32,8 @@ PImage conwayEvolution(PImage img)
       int n = countNeighbours(img, i, j);
       
       if ( img.get(i, j) == ALIVE ) { // Live cell
-        if (n < 2) img_.set(i, j, DEAD); // Die by under-population
         if (n == 2 || n == 3) img_.set(i, j, ALIVE); // Continue to live
-        if (n > 3) img_.set(i, j, DEAD); // Die by overcrowding
+        else img_.set(i, j, DEAD); // Die by under-population or overcrowding
       }
       else { // Dead cell
         if (n == 3) img_.set(i, j, ALIVE); // Reproduction
@@ -78,27 +77,32 @@ void drawImage(PImage img)
         ellipse(i * SCALE + (SCALE>>1), j * SCALE + (SCALE>>1), SCALE, SCALE);
       }
       else {
-        fill(c, 50);
+        fill(c, 100);
         rect(i * SCALE, j * SCALE, (i+1) * SCALE, (j+1) * SCALE);
       }
     }
 }
 
-boolean check = false;
 int x_ = -1, y_ = -1, c_ = 0;
-void drawPoint() {
-  int x = mouseX/SCALE, y = mouseY/SCALE;
+
+void drawPoint(boolean check)
+{
+  int x = mouseX/SCALE,
+      y = mouseY/SCALE;
+
   if(check && x == x_ && y == y_) return;
+
   int c = check ? c_ : (a.get(x, y) == ALIVE ? DEAD : ALIVE);
   a.set(x, y, c);
+
   x_ = x; y_ = y; c_ = c;
 }
 
 
 // Mouse Events
 
-void mousePressed() { check = false; drawPoint(); }
-void mouseDragged() { check = true; if (mousePressed) drawPoint(); }
+void mousePressed() { drawPoint(false); }
+void mouseDragged() { drawPoint(true); }
 
 // Keyboard Events
 
